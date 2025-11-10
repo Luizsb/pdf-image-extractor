@@ -138,5 +138,5 @@ async def download_zip(files: List[str]):
         )
 
 # Servir frontend estático (se existir)
-if os.path.exists("../frontend/dist"):
-    app.mount("/", StaticFiles(directory="../frontend/dist", html=True), name="frontend")
+if os.path.exists("./frontend/dist"):
+    app.mount("/", StaticFiles(directory="./frontend/dist", html=True), name="frontend")
