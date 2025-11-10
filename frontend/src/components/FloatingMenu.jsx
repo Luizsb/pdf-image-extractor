@@ -25,8 +25,9 @@ export default function FloatingMenu({ images, selected }) {
       
       const payload = list.map((img) => `${img.name}|${img.data.split(",")[1]}`);
       
+      const apiUrl = import.meta.env.PROD ? "/api/download-zip" : "http://localhost:8000/download-zip";
       const res = await axios.post(
-        "http://localhost:8000/download-zip",
+        apiUrl,
         payload,
         { responseType: "blob" }
       );
