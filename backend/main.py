@@ -25,10 +25,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
-    return {"status": "Backend funcionando!"}
-
 @app.post("/extract")
 async def extract_images(file: UploadFile = File(...)):
     """Extrai todas as imagens de um PDF"""
