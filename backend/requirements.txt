@@ -1,5 +1,9 @@
-fastapi>=0.100.0
-uvicorn[standard]>=0.23.0
-gunicorn>=21.2.0
-pymupdf>=1.23.0
-python-multipart>=0.0.6
+fastapi
+uvicorn
+gunicorn
+pymupdf
+python-multipart
+httptools
+uvloop
+watchfiles
+websockets
