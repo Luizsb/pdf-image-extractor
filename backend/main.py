@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from typing import List
 import fitz  # PyMuPDF
 from io import BytesIO
@@ -8,6 +9,7 @@ import zipfile
 import base64
 import sys
 import io
+import os
 
 # Configurar encoding UTF-8 para evitar erros no Windows
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
