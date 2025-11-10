@@ -18,9 +18,7 @@ function App() {
       const formData = new FormData();
       formData.append("file", file);
       
-      const apiUrl = import.meta.env.PROD 
-        ? "https://pdf-image-extractor-jxosmg.fly.dev/extract" 
-        : "http://localhost:8000/extract";
+      const apiUrl = import.meta.env.PROD ? "/extract" : "http://localhost:8000/extract";
       const res = await axios.post(apiUrl, formData);
       setImages(res.data.images);
       

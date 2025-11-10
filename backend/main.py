@@ -134,3 +134,7 @@ async def download_zip(files: List[str]):
             status_code=500,
             content={"detail": f"Erro ao criar ZIP: {str(e)}"}
         )
+
+# Servir frontend estático (se existir)
+if os.path.exists("../frontend/dist"):
+    app.mount("/", StaticFiles(directory="../frontend/dist", html=True), name="frontend")
