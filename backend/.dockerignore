@@ -11,4 +11,6 @@ env/
 .git
 .gitignore
 README.md
-
+*.md
+.fly-ignore
+fly.toml
