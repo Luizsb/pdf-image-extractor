@@ -47,31 +47,55 @@ async def extract_images(file: UploadFile = File(...)):
             for img_index, img in enumerate(image_list):
                 try:
                     xref = img[0]
+                    
+                    # Método 1: Extrair diretamente (preserva JPG original)
+                    try:
+                        base_image = doc.extract_image(xref)
+                        image_bytes = base_image["image"]
+                        ext = base_image["ext"]
+                        
+                        # Se já é JPG, usar diretamente (MUITO mais rápido)
+                        if ext in ["jpeg", "jpg"]:
+                            img_base64 = base64.b64encode(image_bytes).decode("utf-8")
+                            images_data.append({
+                                "name": f"pagina_{page_num + 1:03d}_img_{img_index + 1:02d}.jpg",
+                                "data": f"data:image/jpeg;base64,{img_base64}",
+                                "page": page_num + 1
+                            })
+                            print(f"    OK - JPG direto (rápido)")
+                            continue
+                    except:
+                        pass
+                    
+                    # Método 2: Converter usando Pixmap
                     pix = fitz.Pixmap(doc, xref)
-                    print(f"  Imagem {img_index + 1}: n={pix.n}, alpha={pix.alpha}, width={pix.width}, height={pix.height}")
                     
-                    # Garantir que está em RGB ou Grayscale
-                    if pix.n - pix.alpha > 3:  # CMYK ou outro espaço de cor
-                        print(f"    Convertendo de CMYK/outro para RGB")
+                    # Garantir que está em RGB
+                    if pix.n - pix.alpha > 3:
                         pix = fitz.Pixmap(fitz.csRGB, pix)
-                    
-                    # Se tem alpha, remover
                     if pix.alpha:
-                        print(f"    Removendo canal alpha")
                         pix = fitz.Pixmap(fitz.csRGB, pix)
                     
-                    # Converter para PNG
-                    img_data = pix.tobytes("png")
+                    # Redimensionar se muito grande (max 1200px)
+                    max_dim = 1200
+                    if pix.width > max_dim or pix.height > max_dim:
+                        scale = max_dim / max(pix.width, pix.height)
+                        mat = fitz.Matrix(scale, scale)
+                        pix_small = fitz.Pixmap(pix, 0, pix.irect, mat)
+                        pix = pix_small
+                    
+                    # Usar JPEG qualidade 85 (5-10x menor que PNG)
+                    img_data = pix.tobytes("jpeg", jpg_quality=85)
                     img_base64 = base64.b64encode(img_data).decode("utf-8")
                     
                     images_data.append({
-                        "name": f"pagina_{page_num + 1:03d}_img_{img_index + 1:02d}.png",
-                        "data": f"data:image/png;base64,{img_base64}",
+                        "name": f"pagina_{page_num + 1:03d}_img_{img_index + 1:02d}.jpg",
+                        "data": f"data:image/jpeg;base64,{img_base64}",
                         "page": page_num + 1
                     })
-                    print(f"    OK - Imagem extraída com sucesso")
+                    print(f"    OK - Convertido para JPEG")
                     
-                    pix = None  # Liberar memória
+                    pix = None
                     
                 except Exception as img_error:
                     print(f"    ERRO: {str(img_error)}")
